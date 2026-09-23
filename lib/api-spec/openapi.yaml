@@ -1,0 +1,477 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Wallet Witness — Nansen-powered blockchain investigation game API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: cases
+    description: Investigation cases
+  - name: stats
+    description: API stats and buildathon compliance
+  - name: investigate
+    description: Live wallet investigation
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /cases:
+    get:
+      operationId: listCases
+      tags: [cases]
+      summary: List all active investigation cases
+      responses:
+        "200":
+          description: List of cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CaseSummary"
+
+  /cases/{id}:
+    get:
+      operationId: getCase
+      tags: [cases]
+      summary: Get case detail (wallet anonymized)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Case detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseDetail"
+        "404":
+          description: Case not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /cases/{id}/clues:
+    post:
+      operationId: unlockClue
+      tags: [cases]
+      summary: Unlock the next clue for a case (costs 1 Nansen API credit)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClueInput"
+      responses:
+        "200":
+          description: Clue data revealed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClueResult"
+        "400":
+          description: Invalid clue index or already unlocked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Case not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /cases/{id}/verdict:
+    post:
+      operationId: submitVerdict
+      tags: [cases]
+      summary: Submit a verdict and receive a score
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerdictInput"
+      responses:
+        "200":
+          description: Verdict scored and case revealed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerdictResult"
+        "404":
+          description: Case not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [stats]
+      summary: Global API stats and buildathon compliance data
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiStats"
+
+  /investigate:
+    post:
+      operationId: investigateWallet
+      tags: [investigate]
+      summary: Run a live investigation on any wallet address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestigateInput"
+      responses:
+        "200":
+          description: Live investigation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestigationResult"
+        "400":
+          description: Invalid wallet address
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [cases]
+      summary: Get top 20 scores per case for the leaderboard
+      parameters:
+        - name: caseId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter to a specific case. If omitted, returns all cases.
+        - name: sessionId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The current player's session ID used to highlight their own entries.
+      responses:
+        "200":
+          description: Leaderboard data grouped by case
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaderboardResponse"
+
+  /admin/seed:
+    post:
+      operationId: seedCases
+      tags: [cases]
+      summary: Re-seed cases with fresh Nansen API data (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeedInput"
+      responses:
+        "200":
+          description: Seed result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeedResult"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    CaseSummary:
+      type: object
+      required: [id, title, description, difficulty, chain, totalClues, isActive, completedCount]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+        chain:
+          type: string
+        totalClues:
+          type: integer
+        isActive:
+          type: boolean
+        completedCount:
+          type: integer
+        walletAddressMasked:
+          type: ["string", "null"]
+
+    CaseDetail:
+      type: object
+      required: [id, title, description, difficulty, chain, totalClues, walletAddressMasked, narrative, unlockedClues]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+        chain:
+          type: string
+        totalClues:
+          type: integer
+        walletAddressMasked:
+          type: string
+        narrative:
+          type: string
+        unlockedClues:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClueData"
+
+    ClueData:
+      type: object
+      required: [clueIndex, clueType, title, hint, data]
+      properties:
+        clueIndex:
+          type: integer
+        clueType:
+          type: string
+        title:
+          type: string
+        hint:
+          type: string
+        nansenEndpoint:
+          type: ["string", "null"]
+        data:
+          type: object
+
+    ClueInput:
+      type: object
+      required: [clueIndex, sessionId]
+      properties:
+        clueIndex:
+          type: integer
+        sessionId:
+          type: string
+
+    ClueResult:
+      type: object
+      required: [clue, totalNansenCallsMade, fromCache, nansenConfigured]
+      properties:
+        clue:
+          $ref: "#/components/schemas/ClueData"
+        totalNansenCallsMade:
+          type: integer
+        fromCache:
+          type: boolean
+        nansenConfigured:
+          type: boolean
+
+    VerdictInput:
+      type: object
+      required: [walletType, confidence, sessionId, cluesUnlocked]
+      properties:
+        walletType:
+          type: string
+          enum: [smart_money, whale, retail, insider]
+        confidence:
+          type: integer
+          minimum: 1
+          maximum: 100
+        sessionId:
+          type: string
+        cluesUnlocked:
+          type: integer
+
+    VerdictResult:
+      type: object
+      required: [score, isCorrect, correctType, correctTypeLabel, explanation, walletAddress, walletAddressMasked, breakdown]
+      properties:
+        score:
+          type: integer
+        isCorrect:
+          type: boolean
+        correctType:
+          type: string
+        correctTypeLabel:
+          type: string
+        explanation:
+          type: string
+        walletAddress:
+          type: string
+        walletAddressMasked:
+          type: string
+        breakdown:
+          type: object
+
+    ApiStats:
+      type: object
+      required: [totalNansenCalls, callsByEndpoint, casesCompleted, nansenConfigured]
+      properties:
+        totalNansenCalls:
+          type: integer
+        callsByEndpoint:
+          type: object
+        casesCompleted:
+          type: integer
+        nansenConfigured:
+          type: boolean
+        verdictAccuracy:
+          type: ["number", "null"]
+
+    InvestigateInput:
+      type: object
+      required: [walletAddress, chain]
+      properties:
+        walletAddress:
+          type: string
+        chain:
+          type: string
+
+    InvestigationResult:
+      type: object
+      required: [walletAddress, chain, balance, pnlSummary, recentDexTrades, relatedWallets, totalNansenCallsMade, nansenConfigured]
+      properties:
+        walletAddress:
+          type: string
+        chain:
+          type: string
+        balance:
+          type: object
+        pnlSummary:
+          type: object
+        recentDexTrades:
+          type: object
+        relatedWallets:
+          type: object
+        totalNansenCallsMade:
+          type: integer
+        nansenConfigured:
+          type: boolean
+
+    LeaderboardEntry:
+      type: object
+      required: [rank, score, walletTypeGuess, cluesUnlocked, completedAt, isCorrect, isPlayer]
+      properties:
+        rank:
+          type: integer
+        score:
+          type: integer
+        walletTypeGuess:
+          type: string
+        cluesUnlocked:
+          type: integer
+        completedAt:
+          type: string
+          format: date-time
+        isCorrect:
+          type: boolean
+        isPlayer:
+          type: boolean
+          description: True when this entry belongs to the requesting session
+
+    LeaderboardCase:
+      type: object
+      required: [caseId, caseTitle, difficulty, entries]
+      properties:
+        caseId:
+          type: integer
+        caseTitle:
+          type: string
+        difficulty:
+          type: string
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeaderboardEntry"
+        playerBestScore:
+          type: ["integer", "null"]
+          description: The requesting player's best score for this case, or null if they haven't played
+
+    LeaderboardResponse:
+      type: object
+      required: [cases]
+      properties:
+        cases:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeaderboardCase"
+
+    SeedInput:
+      type: object
+      properties:
+        force:
+          type: boolean
+
+    SeedResult:
+      type: object
+      required: [casesSeeded, cluesCached, nansenCallsMade, message]
+      properties:
+        casesSeeded:
+          type: integer
+        cluesCached:
+          type: integer
+        nansenCallsMade:
+          type: integer
+        message:
+          type: string

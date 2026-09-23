@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Dark mode is the default and only mode for this game */
+  --background: 222 47% 7%;
+  --foreground: 0 0% 98%;
+  
+  --border: 222 47% 18%;
+  
+  --card: 222 47% 11%;
+  --card-foreground: 0 0% 98%;
+  --card-border: 222 47% 18%;
+  
+  --sidebar: 222 47% 9%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-border: 222 47% 18%;
+  --sidebar-primary: 38 92% 50%;
+  --sidebar-primary-foreground: 222 47% 7%;
+  --sidebar-accent: 222 47% 18%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-ring: 38 92% 50%;
+  
+  --popover: 222 47% 11%;
+  --popover-foreground: 0 0% 98%;
+  --popover-border: 222 47% 18%;
+  
+  --primary: 38 92% 50%; /* Amber / Gold */
+  --primary-foreground: 222 47% 7%;
+  
+  --secondary: 222 47% 18%;
+  --secondary-foreground: 0 0% 98%;
+  
+  --muted: 222 47% 15%;
+  --muted-foreground: 215 20% 65%;
+  
+  --accent: 222 47% 18%;
+  --accent-foreground: 38 92% 50%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
+  
+  --input: 222 47% 18%;
+  --ring: 38 92% 50%;
+  
+  --chart-1: 38 92% 50%;
+  --chart-2: 215 20% 65%;
+  --chart-3: 142 71% 45%;
+  --chart-4: 0 84% 60%;
+  --chart-5: 222 47% 30%;
+
+  --app-font-sans: 'Inter', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --radius: 0.25rem; 
+
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+
+  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
+  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
+  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
+  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
+  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 2px 4px -1px hsl(0 0% 0% / 0.2);
+  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 4px 6px -1px hsl(0 0% 0% / 0.2);
+  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 8px 10px -1px hsl(0 0% 0% / 0.2);
+  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
+}
+
+.dark {
+  /* Using same variables to force dark mode everywhere */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-primary-foreground;
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  input[type='search']::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  /* Scanline effect for cinematic feel */
+  .scanlines {
+    position: relative;
+  }
+  .scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    z-index: 50;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+  }
+}

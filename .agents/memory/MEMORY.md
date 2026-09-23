@@ -1,0 +1,2 @@
+- [Mobile app design tokens](mobile-design-tokens.md) — dark noir palette derived from wallet-witness/src/index.css; both light/dark keys use the same dark theme (app is dark-only).
+- [Mobile API connectivity](mobile-api-connectivity.md) — Expo web preview uses a different subdomain than the API server; CORS errors in web preview are expected/non-fatal; native Expo Go works without CORS issues.

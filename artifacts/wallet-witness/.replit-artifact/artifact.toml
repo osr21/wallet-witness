@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Wallet Witness"
+description = "An investigation game where players analyze anonymized blockchain wallets using live Nansen onchain data. Each clue revealed costs one Nansen API call. Players deduce the wallet type (Smart Money, Whale, Retail Trader, Insider-Like), submit a verdict, and get scored. Built for the Nansen Meridian Buildathon."
+version = "1.0.0"
+id = "artifacts/wallet-witness"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25668
+
+[services.development]
+run = "pnpm --filter @workspace/wallet-witness run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/wallet-witness", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/wallet-witness/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25668"
+BASE_PATH = "/"
